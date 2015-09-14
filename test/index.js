@@ -6,12 +6,6 @@ function sleep (timeout) {
   return new Promise((resolve) => { setTimeout(resolve, timeout) })
 }
 
-function createTestFunction (fn) {
-  return (done) => {
-    return Promise.resolve().then(fn).then(done, done)
-  }
-}
-
 describe('ElapsedTime', () => {
   let et
 
@@ -62,7 +56,7 @@ describe('ElapsedTime', () => {
     expect(::et.resume).to.throw(Error)
   })
 
-  it('#resume & #getRawValue', createTestFunction(async () => {
+  it('#resume & #getRawValue', async () => {
     et.start()
     await sleep(10)
     et.pause()
@@ -70,13 +64,13 @@ describe('ElapsedTime', () => {
     et.resume()
     await sleep(10)
     expect(et.getRawValue()).to.be.within(19 * 1e6, 28 * 1e6)
-  }))
+  })
 
-  it('#sleep & #getRawValue', createTestFunction(async () => {
+  it('#sleep & #getRawValue', async () => {
     et.start().sleep(10)
     await sleep(12)
     expect(et.getRawValue()).to.be.within(0, 4 * 1e6)
-  }))
+  })
 
   it('#sleep without #start generate Error', () => {
     expect(et.sleep.bind(et, 1)).to.throw(Error)
@@ -87,26 +81,26 @@ describe('ElapsedTime', () => {
     expect(et.sleep.bind(et, 1)).to.throw(Error)
   })
 
-  it('#reset & #getRawValue', createTestFunction(async () => {
+  it('#reset & #getRawValue', async () => {
     et.start()
     await sleep(10)
     et.reset().start()
     expect(et.getRawValue()).to.be.below(1 * 1e6)
-  }))
+  })
 
   it('#getRawValue without #start generate Error', () => {
     expect(::et.getRawValue).to.throw(Error)
   })
 
-  it('#getRawValue', createTestFunction(async () => {
+  it('#getRawValue', async () => {
     et.start()
     await sleep(10)
     expect(et.getRawValue()).to.be.within(9 * 1e6, 14 * 1e6)
     await sleep(10)
     expect(et.getRawValue()).to.be.within(19 * 1e6, 26 * 1e6)
-  }))
+  })
 
-  it('#getRawValue with #pause', createTestFunction(async () => {
+  it('#getRawValue with #pause', async () => {
     et.start()
     await sleep(10)
     et.pause()
@@ -114,21 +108,21 @@ describe('ElapsedTime', () => {
     expect(value).to.be.within(9 * 1e6, 14 * 1e6)
     await sleep(10)
     expect(et.getRawValue()).to.equal(value)
-  }))
+  })
 
   it('#getValue without #start generate Error', () => {
     expect(::et.getValue).to.throw(Error)
   })
 
-  it('#getValue', createTestFunction(async () => {
+  it('#getValue', async () => {
     et.start()
     await sleep(10)
     let value = et.getValue()
     expect(parseInt(value.slice(0, -2), 10)).to.be.within(9 * 1e6, 14 * 1e6)
     expect(value.slice(-2)).to.equal('ns')
-  }))
+  })
 
-  it('#getValue with #pause', createTestFunction(async () => {
+  it('#getValue with #pause', async () => {
     et.start()
     await sleep(10)
     et.pause()
@@ -136,7 +130,7 @@ describe('ElapsedTime', () => {
     expect(parseInt(value.slice(0, -2), 10)).to.be.within(9 * 1e6, 14 * 1e6)
     expect(value.slice(-2)).to.equal('ns')
     expect(et.getValue()).to.equal(value)
-  }))
+  })
 
   it('#getValue with custom formatter', () => {
     let value = et.start().getValue({formatter: () => { return 'h1' }})
